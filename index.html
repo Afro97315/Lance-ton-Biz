@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusinessAI Coach - Ton Assistant IA pour Entreprendre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .typing-animation {
+            border-right: 2px solid #3b82f6;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { border-color: transparent; }
+            51%, 100% { border-color: #3b82f6; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50">
+    <!-- Notification Toast -->
+    <div id="notification" class="notification bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <span id="notificationText">Message</span>
+            <button onclick="hideNotification()" class="ml-4 text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="min-h-full flex flex-col">
+        <!-- Header -->
+        <header class="gradient-bg shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <div class="bg-white rounded-full p-2 mr-3">
+                            <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">BusinessAI Coach</h1>
+                            <p class="text-purple-100 text-sm">Ton mentor IA pour réussir en 2025-2026</p>
+                        </div>
+                    </div>
+                    <nav class="hidden md:flex space-x-6">
+                        <button onclick="showSection('dashboard')" class="nav-btn text-white hover:text-purple-200 transition-colors font-medium">Tableau de bord</button>
+                        <button onclick="showSection('learning')" class="nav-btn text-white hover:text-purple-200 transition-colors font-medium">Formation</button>
+                        <button onclick="showSection('tools')" class="nav-btn text-white hover:text-purple-200 transition-colors font-medium">Outils IA</button>
+                        <button onclick="showSection('community')" class="nav-btn text-white hover:text-purple-200 transition-colors font-medium">Communauté</button>
+                        <button onclick="showSection('chat')" class="nav-btn text-white hover:text-purple-200 transition-colors font-medium">Assistant IA</button>
+                    </nav>
+                    <!-- Mobile menu button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Mobile menu -->
+                <div id="mobileMenu" class="hidden md:hidden pb-4">
+                    <div class="flex flex-col space-y-2">
+                        <button onclick="showSection('dashboard')" class="text-white hover:text-purple-200 transition-colors text-left">Tableau de bord</button>
+                        <button onclick="showSection('learning')" class="text-white hover:text-purple-200 transition-colors text-left">Formation</button>
+                        <button onclick="showSection('tools')" class="text-white hover:text-purple-200 transition-colors text-left">Outils IA</button>
+                        <button onclick="showSection('community')" class="text-white hover:text-purple-200 transition-colors text-left">Communauté</button>
+                        <button onclick="showSection('chat')" class="text-white hover:text-purple-200 transition-colors text-left">Assistant IA</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section-content">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Welcome Section -->
+                    <div class="mb-8 text-center">
+                        <h2 class="text-4xl font-bold text-gray-900 mb-4">Bienvenue dans ton parcours entrepreneurial ! 🚀</h2>
+                        <p class="text-xl text-gray-600 mb-6">Découvre tout ce qu'il faut savoir pour lancer ton business avec l'IA en 2025-2026</p>
+                        <div class="flex justify-center space-x-4">
+                            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                                <span class="pulse-dot inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                                En ligne maintenant
+                            </div>
+                            <div class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+                                +2,847 entrepreneurs actifs
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <div class="text-3xl font-bold text-blue-600 mb-2">47%</div>
+                            <div class="text-gray-600">Formation complétée</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 47%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <div class="text-3xl font-bold text-green-600 mb-2">12</div>
+                            <div class="text-gray-600">Outils utilisés</div>
+                            <div class="text-sm text-green-600 mt-2">+3 cette semaine</div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <div class="text-3xl font-bold text-purple-600 mb-2">8h</div>
+                            <div class="text-gray-600">Temps d'apprentissage</div>
+                            <div class="text-sm text-purple-600 mt-2">Objectif: 20h</div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <div class="text-3xl font-bold text-orange-600 mb-2">3</div>
+                            <div class="text-gray-600">Projets créés</div>
+                            <div class="text-sm text-orange-600 mt-2">1 en cours</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Étape 1: Fondamentaux</h3>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">En cours</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">Apprends les bases de l'entrepreneuriat moderne avec l'IA</p>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-green-500 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    Introduction à l'IA entrepreneuriale
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-green-500 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    Tendances business 2025-2026
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-blue-200 rounded-full mr-2 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    </span>
+                                    Identifier les opportunités IA
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm text-gray-500">75% complété</p>
+                                <button onclick="continueModule(1)" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Continuer →</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Étape 2: Création IA</h3>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Suivant</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">Maîtrise les outils de création de contenu IA</p>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-green-500 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    ChatGPT pour entrepreneurs
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    </span>
+                                    Création d'images avec IA
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    </span>
+                                    Vidéos et présentations IA
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 33%"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm text-gray-500">33% complété</p>
+                                <button onclick="startModule(2)" class="text-green-600 hover:text-green-800 text-sm font-medium">Commencer →</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Étape 3: Agent IA</h3>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">Verrouillé</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">Crée ton propre agent IA gratuitement</p>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm text-gray-400">
+                                    <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    Plateformes no-code pour IA
+                                </div>
+                                <div class="flex items-center text-sm text-gray-400">
+                                    <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    Entraîner ton agent
+                                </div>
+                                <div class="flex items-center text-sm text-gray-400">
+                                    <span class="w-4 h-4 bg-gray-200 rounded-full mr-2 flex items-center justify-center">
+                                        <svg class="w-2 h-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    Déployer et monétiser
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm text-gray-500">Terminer l'étape 2 pour débloquer</p>
+                                <span class="text-gray-400 text-sm">🔒</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Actions rapides</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            <button onclick="showSection('learning')" class="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">📚</div>
+                                <div class="font-medium text-blue-900 text-sm">Formation</div>
+                            </button>
+                            <button onclick="showSection('tools')" class="bg-green-50 hover:bg-green-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">🤖</div>
+                                <div class="font-medium text-green-900 text-sm">Outils IA</div>
+                            </button>
+                            <button onclick="showSection('chat')" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">💬</div>
+                                <div class="font-medium text-purple-900 text-sm">Assistant</div>
+                            </button>
+                            <button onclick="generateBusinessPlan()" class="bg-orange-50 hover:bg-orange-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
+                                <div class="font-medium text-orange-900 text-sm">Business Plan</div>
+                            </button>
+                            <button onclick="showSection('community')" class="bg-pink-50 hover:bg-pink-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">👥</div>
+                                <div class="font-medium text-pink-900 text-sm">Communauté</div>
+                            </button>
+                            <button onclick="openResourceLibrary()" class="bg-indigo-50 hover:bg-indigo-100 p-4 rounded-lg text-center transition-colors group">
+                                <div class="text-2xl mb-2 group-hover:scale-110 transition-transform">📖</div>
+                                <div class="font-medium text-indigo-900 text-sm">Ressources</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity & Tips -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Activité récente</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <span class="text-xs">📚</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Module "Tendances 2025" terminé</p>
+                                        <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <span class="text-xs">🤖</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Business plan généré avec l'IA</p>
+                                        <p class="text-xs text-gray-500">Hier</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <span class="text-xs">💬</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">15 questions posées à l'assistant</p>
+                                        <p class="text-xs text-gray-500">Cette semaine</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Tip -->
+                        <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg p-6 text-white">
+                            <h3 class="text-lg font-semibold mb-4">💡 Conseil du jour</h3>
+                            <p class="mb-4">"En 2025, les entrepreneurs qui maîtrisent l'IA ont 3x plus de chances de réussir. Commence par automatiser une tâche répétitive aujourd'hui !"</p>
+                            <div class="flex items-center justify-between">
+                                <button onclick="getDailyTip()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Nouveau conseil
+                                </button>
+                                <span class="text-sm opacity-75">Conseil #47</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Section -->
+            <div id="learning" class="section-content hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Formation Entrepreneuriat IA 2025-2026</h2>
+                        <p class="text-lg text-gray-600">Parcours complet pour maîtriser l'IA entrepreneuriale</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Course List -->
+                        <div class="lg:col-span-2">
+                            <div class="space-y-6">
+                                <!-- Module 1 -->
+                                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-blue-500">
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h3 class="text-xl font-semibold text-gray-900">Module 1: Fondamentaux du Business IA</h3>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Gratuit</span>
+                                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">75% terminé</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Découvre les tendances 2025-2026 et comment l'IA révolutionne l'entrepreneuriat</p>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                <h4 class="font-medium text-sm mb-2">Ce que tu vas apprendre :</h4>
+                                                <ul class="text-xs space-y-1 text-gray-600">
+                                                    <li>• Révolution IA dans le business</li>
+                                                    <li>• Opportunités 2025-2026</li>
+                                                    <li>• Outils no-code essentiels</li>
+                                                    <li>• Stratégies de lancement</li>
+                                                </ul>
+                                            </div>
+                                            <div class="bg-blue-50 p-3 rounded-lg">
+                                                <h4 class="font-medium text-sm mb-2">Durée et format :</h4>
+                                                <ul class="text-xs space-y-1 text-gray-600">
+                                                    <li>• 3 heures de contenu</li>
+                                                    <li>• 12 leçons interactives</li>
+                                                    <li>• Exercices pratiques</li>
+                                                    <li>• Certificat inclus</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3 mb-4">
+                                            <div class="flex items-center text-sm text-gray-700">
+                                                <span class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3 text-xs">✓</span>
+                                                Introduction à l'IA entrepreneuriale (20 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-700">
+                                                <span class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3 text-xs">✓</span>
+                                                Tendances business 2025-2026 (25 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-blue-700">
+                                                <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-3 text-xs">▶</span>
+                                                Identifier les opportunités IA (30 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-400">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">○</span>
+                                                Cas d'études réels (35 min)
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-3">
+                                            <button onclick="continueModule(1)" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex-1">
+                                                Continuer le module
+                                            </button>
+                                            <button onclick="previewModule(1)" class="border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                                                Aperçu
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Module 2 -->
+                                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-green-500">
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h3 class="text-xl font-semibold text-gray-900">Module 2: Création de Contenu IA</h3>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Gratuit</span>
+                                                <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Nouveau</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Maîtrise les outils de génération de contenu pour ton business</p>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                <h4 class="font-medium text-sm mb-2">Outils couverts :</h4>
+                                                <ul class="text-xs space-y-1 text-gray-600">
+                                                    <li>• ChatGPT & Claude</li>
+                                                    <li>• DALL-E & Midjourney</li>
+                                                    <li>• Canva IA & Figma</li>
+                                                    <li>• Runway & Synthesia</li>
+                                                </ul>
+                                            </div>
+                                            <div class="bg-green-50 p-3 rounded-lg">
+                                                <h4 class="font-medium text-sm mb-2">Projets pratiques :</h4>
+                                                <ul class="text-xs space-y-1 text-gray-600">
+                                                    <li>• Campagne marketing complète</li>
+                                                    <li>• Site web avec IA</li>
+                                                    <li>• Vidéos promotionnelles</li>
+                                                    <li>• Stratégie réseaux sociaux</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3 mb-4">
+                                            <div class="flex items-center text-sm text-green-700">
+                                                <span class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-3 text-xs">✓</span>
+                                                ChatGPT pour entrepreneurs (30 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-700">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">○</span>
+                                                Création d'images avec IA (25 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-700">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">○</span>
+                                                Vidéos et présentations IA (40 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-700">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">○</span>
+                                                Automatisation du contenu (35 min)
+                                            </div>
+                                        </div>
+                                        <button onclick="startModule(2)" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                            Commencer le module
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Module 3 -->
+                                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-500 opacity-75">
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h3 class="text-xl font-semibold text-gray-900">Module 3: Créer ton Agent IA</h3>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Avancé</span>
+                                                <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">🔒 Verrouillé</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-4">Construis ton propre assistant IA sans coder, gratuitement</p>
+                                        
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <p class="text-sm text-yellow-800">Termine le Module 2 pour débloquer ce contenu avancé</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3 mb-4 opacity-50">
+                                            <div class="flex items-center text-sm text-gray-400">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">🔒</span>
+                                                Plateformes no-code pour IA (45 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-400">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">🔒</span>
+                                                Entraîner ton agent (60 min)
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-400">
+                                                <span class="w-6 h-6 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mr-3 text-xs">🔒</span>
+                                                Déployer et monétiser (40 min)
+                                            </div>
+                                        </div>
+                                        <button disabled class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-lg cursor-not-allowed">
+                                            Module verrouillé
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Bonus Modules -->
+                                <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-6 text-white">
+                                    <h3 class="text-xl font-semibold mb-4">🎁 Modules Bonus Exclusifs</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                            <h4 class="font-medium mb-2">💰 Monétisation Avancée</h4>
+                                            <p class="text-sm opacity-90">Stratégies pour générer 10k€/mois avec l'IA</p>
+                                        </div>
+                                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                            <h4 class="font-medium mb-2">🚀 Scaling & Automatisation</h4>
+                                            <p class="text-sm opacity-90">Faire grandir ton business sans effort</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="unlockBonusModules()" class="bg-white text-orange-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                                        Débloquer les bonus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="space-y-6">
+                            <!-- Progress Overview -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ton Progrès Global</h3>
+                                <div class="relative w-32 h-32 mx-auto mb-4">
+                                    <svg class="progress-ring w-32 h-32" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="54" fill="transparent" stroke="#e5e7eb" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="54" fill="transparent" stroke="#3b82f6" stroke-width="8" 
+                                                stroke-dasharray="339.292" stroke-dashoffset="179.5" class="progress-ring-circle"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-blue-600">47%</div>
+                                            <div class="text-xs text-gray-500">Complété</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Modules terminés</span>
+                                        <span class="font-medium">1/3</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Temps d'étude</span>
+                                        <span class="font-medium">8h 30min</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Certificats obtenus</span>
+                                        <span class="font-medium">1</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Learning Streak -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Série d'apprentissage 🔥</h3>
+                                <div class="text-center mb-4">
+                                    <div class="text-3xl font-bold text-orange-600">7</div>
+                                    <div class="text-sm text-gray-600">jours consécutifs</div>
+                                </div>
+                                <div class="flex justify-center space-x-1 mb-4">
+                                    <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xs">🔥</span>
+                                    </div>
+                                    <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xs">🔥</span>
+                                    </div>
+                                    <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xs">🔥</span>
+                                    </div>
+                                    <div class="w-6 h-6 bg-orange-300 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xs">🔥</span>
+                                    </div>
+                                    <div class="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                </div>
+                                <p class="text-xs text-gray-600 text-center">Continue pour atteindre 10 jours !</p>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+                                <h3 class="text-lg font-semibold mb-4">Prochaines étapes 🎯</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3 text-xs">1</span>
+                                        Terminer "Opportunités IA"
+                                    </div>
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3 text-xs">2</span>
+                                        Créer ton premier contenu IA
+                                    </div>
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3 text-xs">3</span>
+                                        Débloquer le Module 3
+                                    </div>
+                                </div>
+                                <button onclick="continueModule(1)" class="w-full bg-white text-blue-600 py-2 px-4 rounded-lg font-medium hover:bg-gray-100 transition-colors mt-4">
+                                    Continuer maintenant
+                                </button>
+                            </div>
+
+                            <!-- Community Highlight -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Communauté Active</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center text-sm">
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-xs">👤</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Marie L.</p>
+                                            <p class="text-gray-600 text-xs">A lancé son SaaS IA</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-sm">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-xs">👤</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Thomas K.</p>
+                                            <p class="text-gray-600 text-xs">10k€/mois avec l'IA</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="showSection('community')" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors mt-4">
+                                    Rejoindre les discussions
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Section -->
+            <div id="tools" class="section-content hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Outils IA Gratuits pour Entrepreneurs</h2>
+                        <p class="text-lg text-gray-600">Boîte à outils complète pour lancer et développer ton business</p>
+                    </div>
+
+                    <!-- Tool Categories -->
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button onclick="filterTools('all')" class="tool-filter active bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">
+                            Tous les outils
+                        </button>
+                        <button onclick="filterTools('planning')" class="tool-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors">
+                            Planification
+                        </button>
+                        <button onclick="filterTools('content')" class="tool-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors">
+                            Contenu
+                        </button>
+                        <button onclick="filterTools('ai')" class="tool-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors">
+                            Agents IA
+                        </button>
+                        <button onclick="filterTools('analysis')" class="tool-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors">
+                            Analyse
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="toolsGrid">
+                        <!-- Business Plan Generator -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="planning">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Générateur de Business Plan</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Crée un plan d'affaires professionnel en quelques minutes avec l'IA. Inclut projections financières et analyse de marché.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        15-20 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">1,247 utilisations</div>
+                            </div>
+                            <button onclick="openBusinessPlanTool()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                Utiliser l'outil
+                            </button>
+                        </div>
+
+                        <!-- Content Creator -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="content">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Créateur de Contenu</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Génère du contenu marketing, posts réseaux sociaux et articles de blog optimisés pour ton audience.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        5-10 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">3,892 utilisations</div>
+                            </div>
+                            <button onclick="openContentCreator()" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                Créer du contenu
+                            </button>
+                        </div>
+
+                        <!-- AI Agent Builder -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="ai">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Constructeur d'Agent IA</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">Premium</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Crée ton propre assistant IA personnalisé sans programmation. Guide étape par étape inclus.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        30-45 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">567 créés</div>
+                            </div>
+                            <button onclick="openAgentBuilder()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
+                                Construire un agent
+                            </button>
+                        </div>
+
+                        <!-- Market Research -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="analysis">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-orange-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Analyse de Marché IA</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Analyse ton marché cible et identifie les opportunités business avec des données en temps réel.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        10-15 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">2,156 analyses</div>
+                            </div>
+                            <button onclick="openMarketResearch()" class="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors">
+                                Analyser le marché
+                            </button>
+                        </div>
+
+                        <!-- Pitch Deck Generator -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="planning">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-red-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Générateur de Pitch Deck</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Crée une présentation professionnelle pour convaincre investisseurs et partenaires.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        20-30 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">834 présentations</div>
+                            </div>
+                            <button onclick="openPitchGenerator()" class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                                Créer un pitch
+                            </button>
+                        </div>
+
+                        <!-- Financial Projections -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="analysis">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-indigo-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Projections Financières</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Calcule tes prévisions financières et modèles de revenus avec des graphiques interactifs.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        15-25 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">1,923 calculs</div>
+                            </div>
+                            <button onclick="openFinancialTool()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
+                                Calculer les finances
+                            </button>
+                        </div>
+
+                        <!-- Logo Generator -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="content">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-pink-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Générateur de Logo IA</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Crée un logo professionnel pour ton entreprise en quelques clics avec l'IA générative.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        5-10 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">2,445 logos</div>
+                            </div>
+                            <button onclick="openLogoGenerator()" class="w-full bg-pink-600 text-white py-2 px-4 rounded-lg hover:bg-pink-700 transition-colors">
+                                Créer un logo
+                            </button>
+                        </div>
+
+                        <!-- Website Builder -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="content">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-teal-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V5zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Constructeur de Site IA</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Nouveau</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Génère un site web complet pour ton business avec contenu et design optimisés.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        25-40 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">156 sites créés</div>
+                            </div>
+                            <button onclick="openWebsiteBuilder()" class="w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+                                Créer un site
+                            </button>
+                        </div>
+
+                        <!-- Competitor Analysis -->
+                        <div class="tool-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow" data-category="analysis">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-yellow-100 p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h12a1 1 0 001-1V7l-7-5zM6 9.5a.5.5 0 01.5-.5h7a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Analyse Concurrentielle</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gratuit</span>
+                                        <span class="ml-2 text-yellow-500 text-sm">⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">Analyse tes concurrents et identifie les opportunités de différenciation sur ton marché.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        15-20 min
+                                    </span>
+                                </div>
+                                <div class="text-sm text-green-600 font-medium">1,089 analyses</div>
+                            </div>
+                            <button onclick="openCompetitorAnalysis()" class="w-full bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors">
+                                Analyser la concurrence
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Popular Tools Section -->
+                    <div class="mt-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 text-white">
+                        <h3 class="text-2xl font-bold mb-4 text-center">🔥 Outils les plus populaires cette semaine</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+                                <div class="text-3xl mb-2">📋</div>
+                                <h4 class="font-semibold mb-1">Business Plan IA</h4>
+                                <p class="text-sm opacity-90">+347% d'utilisation</p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+                                <div class="text-3xl mb-2">🤖</div>
+                                <h4 class="font-semibold mb-1">Agent IA Builder</h4>
+                                <p class="text-sm opacity-90">+289% d'utilisation</p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+                                <div class="text-3xl mb-2">📝</div>
+                                <h4 class="font-semibold mb-1">Créateur Contenu</h4>
+                                <p class="text-sm opacity-90">+156% d'utilisation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Section -->
+            <div id="community" class="section-content hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-4">Communauté BusinessAI 👥</h2>
+                        <p class="text-lg text-gray-600">Connecte-toi avec +2,847 entrepreneurs qui utilisent l'IA pour réussir</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Community Feed -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Success Story -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <span class="text-lg">🎉</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">Marie L. - Success Story</h3>
+                                        <p class="text-sm text-gray-500">Il y a 2 heures</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"Grâce aux outils BusinessAI, j'ai lancé mon SaaS en 3 semaines ! Mon agent IA gère maintenant 80% du support client. Résultat : 15k€ de revenus le premier mois ! 🚀"</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex space-x-4">
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                                            </svg>
+                                            47 likes
+                                        </button>
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                                            </svg>
+                                            12 commentaires
+                                        </button>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Success Story</span>
+                                </div>
+                            </div>
+
+                            <!-- Question/Discussion -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <span class="text-lg">❓</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">Thomas K.</h3>
+                                        <p class="text-sm text-gray-500">Il y a 4 heures</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"Salut la communauté ! Je cherche des conseils pour monétiser mon agent IA. J'ai créé un assistant pour les coachs sportifs, il fonctionne super bien mais je ne sais pas comment fixer mes prix. Des idées ? 💡"</p>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm">👤</span>
+                                        </div>
+                                        <span class="font-medium text-sm">Sophie M.</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">"Pour un agent IA spécialisé, je recommande 49€/mois par utilisateur. Tu peux aussi faire du freemium avec 100 questions gratuites puis 0,50€ par question supplémentaire."</p>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex space-x-4">
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                                            </svg>
+                                            23 likes
+                                        </button>
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                                            </svg>
+                                            8 réponses
+                                        </button>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Question</span>
+                                </div>
+                            </div>
+
+                            <!-- Resource Share -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                        <span class="text-lg">📚</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">Alex R. - Partage de ressource</h3>
+                                        <p class="text-sm text-gray-500">Hier</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"Je partage ma liste de 50 prompts ChatGPT pour entrepreneurs ! Parfait pour créer du contenu marketing, analyser la concurrence et générer des idées business. Tout est gratuit 🎁"</p>
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                                    <h4 class="font-medium text-orange-900 mb-2">📋 50 Prompts ChatGPT pour Entrepreneurs</h4>
+                                    <p class="text-sm text-orange-700 mb-3">Collection complète de prompts testés et optimisés</p>
+                                    <button onclick="downloadPrompts()" class="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-700 transition-colors">
+                                        Télécharger gratuitement
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex space-x-4">
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                                            </svg>
+                                            89 likes
+                                        </button>
+                                        <button class="flex items-center text-gray-500 hover:text-blue-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                                            </svg>
+                                            15 commentaires
+                                        </button>
+                                    </div>
+                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs">Ressource</span>
+                                </div>
+                            </div>
+
+                            <!-- Post Form -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="font-semibold text-gray-900 mb-4">Partager avec la communauté</h3>
+                                <form onsubmit="postToCommunity(event)">
+                                    <textarea id="communityPost" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" placeholder="Partage ton expérience, pose une question ou aide un autre entrepreneur..."></textarea>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex space-x-2">
+                                            <button type="button" class="text-gray-500 hover:text-blue-600">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </button>
+                                            <button type="button" class="text-gray-500 hover:text-blue-600">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                            Publier
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="space-y-6">
+                            <!-- Community Stats -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques Communauté</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Membres actifs</span>
+                                        <span class="font-semibold text-blue-600">2,847</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Posts cette semaine</span>
+                                        <span class="font-semibold text-green-600">156</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Success stories</span>
+                                        <span class="font-semibold text-purple-600">23</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600">Revenus générés</span>
+                                        <span class="font-semibold text-orange-600">847k€</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Contributors -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Contributeurs 🏆</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-xs">🥇</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Marie L.</p>
+                                            <p class="text-xs text-gray-500">47 posts utiles</p>
+                                        </div>
+                                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Expert</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-xs">🥈</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Alex R.</p>
+                                            <p class="text-xs text-gray-500">34 ressources partagées</p>
+                                        </div>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Mentor</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-xs">🥉</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-sm">Sophie M.</p>
+                                            <p class="text-xs text-gray-500">28 réponses utiles</p>
+                                        </div>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Helper</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Trending Topics -->
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sujets Tendance 🔥</h3>
+                                <div class="space-y-2">
+                                    <button onclick="filterCommunity('agents-ia')" class="w-full text-left bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium">#agents-ia</span>
+                                            <span class="text-xs text-gray-500">89 posts</span>
+                                        </div>
+                                    </button>
+                                    <button onclick="filterCommunity('monetisation')" class="w-full text-left bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium">#monétisation</span>
+                                            <span class="text-xs text-gray-500">67 posts</span>
+                                        </div>
+                                    </button>
+                                    <button onclick="filterCommunity('no-code')" class="w-full text-left bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium">#no-code</span>
+                                            <span class="text-xs text-gray-500">45 posts</span>
+                                        </div>
+                                    </button>
+                                    <button onclick="filterCommunity('success-stories')" class="w-full text-left bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium">#success-stories</span>
+                                            <span class="text-xs text-gray-500">23 posts</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Events -->
+                            <div class="bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg p-6 text-white">
+                                <h3 class="text-lg font-semibold mb-4">Événements à venir 📅</h3>
+                                <div class="space-y-3">
+                                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                        <h4 class="font-medium text-sm">Webinar: "Agents IA Rentables"</h4>
+                                        <p class="text-xs opacity-90">Demain 19h - Gratuit</p>
+                                    </div>
+                                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                        <h4 class="font-medium text-sm">Masterclass: "10k€/mois avec l'IA"</h4>
+                                        <p class="text-xs opacity-90">Vendredi 20h - Premium</p>
+                                    </div>
+                                </div>
+                                <button onclick="viewEvents()" class="w-full bg-white text-purple-600 py-2 px-4 rounded-lg font-medium hover:bg-gray-100 transition-colors mt-4">
+                                    Voir tous les événements
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div id="chat" class="section-content hidden">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="bg-white rounded-lg shadow-lg flex flex-col" style="height: 600px;">
+                        <!-- Chat Header -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-t-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-2xl">🤖</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold">Assistant IA BusinessCoach</h3>
+                                        <p class="text-sm opacity-90 flex items-center">
+                                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
+                                            En ligne - Expert en entrepreneuriat IA
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="clearChat()" class="bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-4">
+                            <div class="flex items-start slide-in">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <span class="text-sm">🤖</span>
+                                </div>
+                                <div class="bg-gray-100 rounded-lg p-3 max-w-xs lg:max-w-md">
+                                    <p class="text-sm">Salut ! Je suis ton assistant IA spécialisé en entrepreneuriat. Je peux t'aider à :</p>
+                                    <ul class="text-sm mt-2 space-y-1">
+                                        <li>• <strong>Créer ton business plan</strong> personnalisé</li>
+                                        <li>• <strong>Développer des stratégies marketing</strong> IA</li>
+                                        <li>• <strong>Construire ton agent IA</strong> gratuitement</li>
+                                        <li>• <strong>Analyser ton marché</strong> et la concurrence</li>
+                                        <li>• <strong>Optimiser tes revenus</strong> avec l'IA</li>
+                                    </ul>
+                                    <p class="text-sm mt-2 font-medium text-blue-600">Que veux-tu accomplir aujourd'hui ? 🚀</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="p-4 border-t bg-gray-50 rounded-b-lg">
+                            <form onsubmit="sendMessage(event)" class="flex space-x-2 mb-3">
+                                <input 
+                                    type="text" 
+                                    id="chatInput" 
+                                    placeholder="Pose ta question sur l'entrepreneuriat IA..."
+                                    class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                                    </svg>
+                                    Envoyer
+                                </button>
+                            </form>
+                            
+                            <!-- Quick Questions -->
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="askQuickQuestion('Comment créer un agent IA gratuitement en 2025 ?')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-full transition-colors">
+                                    🤖 Agent IA gratuit
+                                </button>
+                                <button onclick="askQuickQuestion('Quelles sont les meilleures opportunités business IA en 2025 ?')" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded-full transition-colors">
+                                    💡 Opportunités 2025
+                                </button>
+                                <button onclick="askQuickQuestion('Comment monétiser mon contenu IA et générer 10k€/mois ?')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded-full transition-colors">
+                                    💰 Monétisation IA
+                                </button>
+                                <button onclick="askQuickQuestion('Quels outils no-code utiliser pour lancer mon business ?')" class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1 rounded-full transition-colors">
+                                    🛠️ Outils no-code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tool Modals -->
+        <div id="toolModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modalTitle" class="text-xl font-semibold text-gray-900"></h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = {
+            name: "Entrepreneur",
+            progress: 47,
+            streak: 7,
+            completedModules: 1,
+            totalModules: 3
+        };
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-purple-200', 'font-bold');
+                btn.classList.add('text-white');
+            });
+            
+            // Highlight active nav
+            event.target.classList.add('text-purple-200', 'font-bold');
+            
+            // Hide mobile menu
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            
+            // Set color based on type
+            notification.className = `notification ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg`;
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function hideNotification() {
+            document.getElementById('notification').classList.remove('show');
+        }
+
+        // Chat functionality
+        function sendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const response = generateAIResponse(message);
+                    addMessage(response, 'ai');
+                }, 1500);
+            }
+        }
+
+        function askQuickQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage(new Event('submit'));
+        }
+
+        function addMessage(message, sender) {
+            const mess<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'990bfd096105bb78',t:'MTc2MDgzMTk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
